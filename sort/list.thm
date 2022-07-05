@@ -1,0 +1,45 @@
+%
+% After in_ord inserts an element into a sorted list, the list remains sorted.
+%
+inv_sort_thm : sorted L -> in_ord L E L' -> sorted L' -> type.
+%mode inv_sort_thm +D1 +D2 -D3.
+
+inv_sort_thm_nil : inv_sort_thm sorted_nil in_ord_nil sorted_one.
+
+inv_sort_thm_sorted : inv_sort_thm SORTED (in_ord_leq LEQ) (sorted_con SORTED LEQ).
+
+inv_sort_thm_one : inv_sort_thm 
+      sorted_one 
+      (in_ord_gth in_ord_nil GRT) 
+      (sorted_con sorted_one LEQ) 
+      <- inv_grt GRT LEQ.
+
+inv_sort_thm_cons_grt_t: inv_sort_thm 
+      (sorted_con SORTED LEQ)
+      (in_ord_gth (in_ord_gth INORD_T GRT_T) GRT)
+      (sorted_con SORTED_TAIL LEQ)
+      <- inv_sort_thm SORTED (in_ord_gth INORD_T GRT_T) SORTED_TAIL.
+
+inv_sort_thm_grt_leq : inv_sort_thm
+      (sorted_con SORTED LEQ)
+      (in_ord_gth (in_ord_leq LEQ2) GRT)
+      (sorted_con (sorted_con SORTED LEQ2) LEQ3)
+      <- inv_grt GRT LEQ3.
+
+%worlds () (inv_sort_thm _ _ _).
+%total D (inv_sort_thm D _ _).
+
+%
+% 'sort' sorts a list.
+%
+sort_thm : sort L L' -> sorted L' -> type.
+%mode sort_thm +SORT -SORTED.
+
+sort_thm_nil : sort_thm sort_nil sorted_nil.
+
+sort_thm_con : sort_thm (sort_con ORD SORT) SORTED2
+      <- sort_thm SORT SORTED1
+      <- inv_sort_thm SORTED1 ORD SORTED2.
+
+%worlds () (sort_thm _ _).
+%total D (sort_thm D _).
